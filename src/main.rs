@@ -1,5 +1,5 @@
 use eframe::egui;
-use rand::Rng; // Para generar la contraseña
+use rand::Rng;
 
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {
@@ -21,14 +21,11 @@ fn main() -> eframe::Result<()> {
         options,
         Box::new(|cc| {
             egui_extras::install_image_loaders(&cc.egui_ctx);
-            
-            // 👇 CAMBIO CLAVE: Retornamos el Box directamente sin Ok() ni cast
             Box::new(PasswordApp::default())
         }),
     )
 }
 
-// Definimos los idiomas disponibles
 #[derive(PartialEq)]
 enum Idioma { Es, En, Fr, De }
 
@@ -67,29 +64,22 @@ impl eframe::App for PasswordApp {
 
         egui::CentralPanel::default().show(ctx, |ui| {
 
-        // --- SECCIÓN DE IDIOMA ---
         ui.horizontal(|ui| {
-            // Reemplazamos egui::ImageButton::new(...) por egui::Button::image(...)
-            
-            // Botón para Español
             let image_es = egui::include_image!("español.png");
             if ui.add(egui::Button::image(image_es).selected(self.idioma_actual == Idioma::Es)).clicked() {
                 self.idioma_actual = Idioma::Es;
             }
 
-            // Botón para Inglés
             let image_en = egui::include_image!("inglés.png");
             if ui.add(egui::Button::image(image_en).selected(self.idioma_actual == Idioma::En)).clicked() {
                 self.idioma_actual = Idioma::En;
             }
 
-            // Botón para Francés
             let image_fr = egui::include_image!("francés.png");
             if ui.add(egui::Button::image(image_fr).selected(self.idioma_actual == Idioma::Fr)).clicked() {
                 self.idioma_actual = Idioma::Fr;
             }
 
-            // Botón para Alemán
             let image_de = egui::include_image!("alemán.png");
             if ui.add(egui::Button::image(image_de).selected(self.idioma_actual == Idioma::De)).clicked() {
                 self.idioma_actual = Idioma::De;
@@ -98,7 +88,6 @@ impl eframe::App for PasswordApp {
 
             ui.separator();
 
-            // --- TEXTOS SEGÚN IDIOMA ---
             let (titulo, txt_mayus, txt_minus, txt_num, txt_sim, btn_gen, btn_copy, txt_long) = match self.idioma_actual {
                 Idioma::Es => ("Generador de Contraseñas", "Mayúsculas", "Minúsculas", "Números", "Símbolos", "GENERAR", "Copiar", "Longitud"),
                 Idioma::En => ("Password Generator", "Uppercase", "Lowercase", "Numbers", "Symbols", "GENERATE", "Copy", "Length"),
@@ -109,7 +98,6 @@ impl eframe::App for PasswordApp {
             ui.heading(egui::RichText::new(titulo).color(egui::Color32::BLACK).size(30.0));
             ui.add(egui::Slider::new(&mut self.longitud, 4.0..=128.0).text(txt_long));
 
-            // --- CHECKBOXES ---
             ui.checkbox(&mut self.mayusculas, txt_mayus);
             ui.checkbox(&mut self.minusculas, txt_minus);
             ui.checkbox(&mut self.numeros, txt_num);
